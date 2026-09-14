@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <title>佳赫稅務 內部查閱頁</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Noto Sans TC', sans-serif; background: #F5F0E8; color: #3A2E12; }
 .jh-wrap { max-width: 560px; margin: 0 auto; padding: 24px 16px 60px; }
@@ -26,28 +26,31 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 .jh-filter button { font-size: 13px; padding: 6px 12px; border-radius: 20px; border: 1px solid #C8872A; background: #FFFFFF; color: #6B5A32; }
 .jh-filter button.is-active { background: #C8872A; color: #FFFFFF; }
 
-.jh-card { background: #FFFFFF; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid rgba(200,135,42,0.25); }
-.jh-card.is-processed { opacity: .55; }
-.jh-card.is-highlighted { border: 2px solid #C8872A; box-shadow: 0 0 0 3px rgba(200,135,42,0.18); }
-.jh-card__row { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-.jh-card__row .jh-card__name { font-size: 15px; font-weight: 700; color: #2C2412; flex-shrink: 0; }
-.jh-card__row .jh-card__phone-short { font-size: 13px; color: #6B5A32; font-family: 'Space Mono', 'Noto Sans TC', monospace; flex-shrink: 0; }
-.jh-card__row .jh-card__scene-tag { font-size: 11px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
-.jh-card__row .jh-card__time-short { font-size: 12px; color: #8A7A50; margin-left: auto; flex-shrink: 0; }
-.jh-card__row .jh-card__status-dot { width: 8px; height: 8px; border-radius: 50%; background: #B8860B; flex-shrink: 0; }
-.jh-card.is-processed .jh-card__status-dot { background: #C9C0A8; }
-.jh-card__caret { font-size: 11px; color: #B8860B; flex-shrink: 0; transition: transform .15s; }
-.jh-card.is-open .jh-card__caret { transform: rotate(90deg); }
-.jh-card__detail-wrap { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(200,135,42,0.15); }
-.jh-card.is-open .jh-card__detail-wrap { display: block; }
-.jh-card__top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
-.jh-card__name { font-size: 16px; font-weight: 700; color: #2C2412; }
-.jh-card__time { font-size: 12px; color: #8A7A50; }
-.jh-card__scene { display: inline-block; font-size: 12px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 12px; margin-bottom: 8px; }
-.jh-card__phone { font-size: 14px; color: #4A3B14; margin-bottom: 8px; }
-.jh-card__detail { font-size: 13px; color: #5A4A26; line-height: 1.8; white-space: pre-wrap; margin-bottom: 12px; }
-.jh-card__btn { font-size: 13px; padding: 8px 14px; border-radius: 8px; border: none; background: #B8860B; color: #FFFFFF; cursor: pointer; }
-.jh-card__btn[disabled] { background: #C9C0A8; cursor: default; }
+/* 條列式列表:每一列固定高度,不會因為展開而跳動 */
+.jh-row { display: flex; align-items: center; gap: 10px; background: #FFFFFF; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; border: 1px solid rgba(200,135,42,0.25); cursor: pointer; }
+.jh-row.is-processed { opacity: .55; }
+.jh-row.is-active { border-color: #C8872A; background: #FBF0DC; box-shadow: 0 0 0 2px rgba(200,135,42,0.25); }
+.jh-row.is-highlighted { border-color: #C8872A; box-shadow: 0 0 0 3px rgba(200,135,42,0.18); }
+.jh-row__status-dot { width: 8px; height: 8px; border-radius: 50%; background: #B8860B; flex-shrink: 0; }
+.jh-row.is-processed .jh-row__status-dot { background: #C9C0A8; }
+.jh-row__name { font-size: 15px; font-weight: 700; color: #2C2412; flex-shrink: 0; }
+.jh-row__phone { font-size: 13px; color: #6B5A32; font-family: 'Space Mono', 'Noto Sans TC', monospace; flex-shrink: 0; }
+.jh-row__scene { font-size: 11px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; white-space: nowrap; }
+.jh-row__time { font-size: 12px; color: #8A7A50; margin-left: auto; flex-shrink: 0; }
+
+/* 彈跳視窗 */
+.jh-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(44,36,18,0.45); align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+.jh-modal-overlay.is-visible { display: flex; }
+.jh-modal { background: #FFFFFF; border-radius: 14px; padding: 24px 22px; max-width: 420px; width: 100%; max-height: 82vh; overflow-y: auto; }
+.jh-modal__top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.jh-modal__name { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 600; color: #2C2412; }
+.jh-modal__close { background: none; border: none; font-size: 20px; color: #8A7A50; cursor: pointer; line-height: 1; padding: 2px; }
+.jh-modal__time { font-size: 12px; color: #8A7A50; margin-bottom: 12px; }
+.jh-modal__scene { display: inline-block; font-size: 12px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 12px; margin-bottom: 12px; }
+.jh-modal__phone { font-size: 15px; color: #4A3B14; font-weight: 700; margin-bottom: 14px; }
+.jh-modal__detail { font-size: 14px; color: #5A4A26; line-height: 1.9; white-space: pre-wrap; margin-bottom: 18px; padding-top: 14px; border-top: 1px solid rgba(200,135,42,0.15); }
+.jh-modal__btn { width: 100%; font-size: 15px; font-weight: 700; padding: 12px; border-radius: 9px; border: none; background: #B8860B; color: #FFFFFF; cursor: pointer; }
+.jh-modal__btn[disabled] { background: #C9C0A8; cursor: default; }
 
 .jh-empty { text-align: center; color: #8A7A50; font-size: 14px; padding: 40px 0; }
 .jh-config { font-size: 13px; color: #8A7A50; background: #FBF8F2; border: 1px dashed #C8872A; border-radius: 8px; padding: 12px; margin-bottom: 16px; line-height: 1.7; }
@@ -83,6 +86,20 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
   <div id="emptyState" class="jh-empty" style="display:none;">目前沒有符合的資料</div>
 </div>
 
+<div class="jh-modal-overlay" id="modalOverlay">
+  <div class="jh-modal">
+    <div class="jh-modal__top">
+      <span class="jh-modal__name" id="modalName"></span>
+      <button type="button" class="jh-modal__close" id="modalClose">✕</button>
+    </div>
+    <div class="jh-modal__time" id="modalTime"></div>
+    <span class="jh-modal__scene" id="modalScene"></span>
+    <div class="jh-modal__phone" id="modalPhone"></div>
+    <div class="jh-modal__detail" id="modalDetail"></div>
+    <button type="button" class="jh-modal__btn" id="modalMarkBtn">標記已處理</button>
+  </div>
+</div>
+
 <script>
 // 待辦:部署時把這裡換成跟 jhtax-line-hub.html 相同的 Apps Script Web App 網址
 var ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbzLZSFJboTo1rKHiYKrqpHRIfbkLOPLSnJcaLvlFv9IaRPZZTfDsrm6uh5IMioxx8TJNg/exec';
@@ -92,6 +109,7 @@ var currentFilter = 'all';
 var highlightRow = Number(new URLSearchParams(location.search).get('row')) || null;
 var hasScrolled = false;
 var accessKey = '';
+var activeRowNumber = null;
 
 // --- 密碼登入 ---
 document.getElementById('gateSubmit').addEventListener('click', tryEnter);
@@ -134,49 +152,82 @@ function render() {
 
   document.getElementById('emptyState').style.display = filtered.length ? 'none' : 'block';
   listEl.innerHTML = filtered.map(function(row){
-    var extra = {};
-    try { extra = JSON.parse(row['其他欄位JSON'] || '{}'); } catch(e){}
-    var detailLines = Object.keys(extra).filter(function(k){ return k !== 'scene' && extra[k]; })
-      .map(function(k){ return k + ':' + extra[k]; }).join('\n');
     var processed = row['狀態'] === '已處理';
     var isTarget = highlightRow && Number(row['_row']) === highlightRow;
-    return '<div class="jh-card' + (processed ? ' is-processed' : '') + (isTarget ? ' is-highlighted is-open' : '') + '" ' + (isTarget ? 'data-highlighted="1"' : '') + '>' +
-      '<div class="jh-card__row" data-toggle="1">' +
-      '<span class="jh-card__status-dot"></span>' +
-      '<span class="jh-card__name">' + escapeHtml(row['稱呼']) + '</span>' +
-      '<span class="jh-card__phone-short">' + escapeHtml(row['手機號碼']) + '</span>' +
-      '<span class="jh-card__scene-tag">' + escapeHtml(row['情境']) + '</span>' +
-      '<span class="jh-card__time-short">' + escapeHtml(formatTime(row['送出時間'])) + '</span>' +
-      '<span class="jh-card__caret">▶</span>' +
-      '</div>' +
-      '<div class="jh-card__detail-wrap">' +
-      (detailLines ? '<div class="jh-card__detail">' + escapeHtml(detailLines) + '</div>' : '') +
-      '<button class="jh-card__btn" data-row="' + row['_row'] + '" ' + (processed ? 'disabled' : '') + '>' +
-      (processed ? '已處理' : '標記已處理') + '</button>' +
-      '</div></div>';
+    var isActive = activeRowNumber === Number(row['_row']);
+    return '<div class="jh-row' + (processed ? ' is-processed' : '') + (isTarget ? ' is-highlighted' : '') + (isActive ? ' is-active' : '') + '" data-row="' + row['_row'] + '">' +
+      '<span class="jh-row__status-dot"></span>' +
+      '<span class="jh-row__name">' + escapeHtml(row['稱呼']) + '</span>' +
+      '<span class="jh-row__phone">' + escapeHtml(row['手機號碼']) + '</span>' +
+      '<span class="jh-row__scene">' + escapeHtml(row['情境']) + '</span>' +
+      '<span class="jh-row__time">' + escapeHtml(formatTime(row['送出時間'])) + '</span>' +
+      '</div>';
   }).join('');
 
-  listEl.querySelectorAll('.jh-card__row').forEach(function(rowEl){
+  listEl.querySelectorAll('.jh-row').forEach(function(rowEl){
     rowEl.addEventListener('click', function(){
-      rowEl.closest('.jh-card').classList.toggle('is-open');
-    });
-  });
-
-  listEl.querySelectorAll('.jh-card__btn:not([disabled])').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      e.stopPropagation();
-      markProcessed(btn.dataset.row, btn);
+      openModal(Number(rowEl.dataset.row));
     });
   });
 
   if (highlightRow && !hasScrolled) {
-    var target = listEl.querySelector('[data-highlighted="1"]');
+    var target = listEl.querySelector('.is-highlighted');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
       hasScrolled = true;
+      openModal(highlightRow);
     }
   }
 }
+
+function findRow(rowNumber) {
+  for (var i = 0; i < allRows.length; i++) {
+    if (Number(allRows[i]['_row']) === rowNumber) return allRows[i];
+  }
+  return null;
+}
+
+// --- 彈跳視窗 ---
+function openModal(rowNumber) {
+  var row = findRow(rowNumber);
+  if (!row) return;
+  activeRowNumber = rowNumber;
+  render(); // 重畫列表讓對應那一列顯示 active 狀態
+
+  var extra = {};
+  try { extra = JSON.parse(row['其他欄位JSON'] || '{}'); } catch(e){}
+  var detailLines = Object.keys(extra).filter(function(k){ return k !== 'scene' && extra[k]; })
+    .map(function(k){ return k + ':' + extra[k]; }).join('\n');
+  var processed = row['狀態'] === '已處理';
+
+  document.getElementById('modalName').textContent = row['稱呼'] || '';
+  document.getElementById('modalTime').textContent = formatTime(row['送出時間']);
+  document.getElementById('modalScene').textContent = row['情境'] || '';
+  document.getElementById('modalPhone').textContent = row['手機號碼'] || '';
+  document.getElementById('modalDetail').textContent = detailLines;
+  document.getElementById('modalDetail').style.display = detailLines ? 'block' : 'none';
+
+  var markBtn = document.getElementById('modalMarkBtn');
+  markBtn.disabled = processed;
+  markBtn.textContent = processed ? '已處理' : '標記已處理';
+  markBtn.onclick = function(){ markProcessed(rowNumber, markBtn); };
+
+  document.getElementById('modalOverlay').classList.add('is-visible');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('is-visible');
+  activeRowNumber = null;
+  render();
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', function(e){
+  if (e.target.id === 'modalOverlay') closeModal();
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') closeModal();
+});
 
 function escapeHtml(s) {
   return (s === undefined || s === null ? '' : String(s))
@@ -198,6 +249,7 @@ function markProcessed(rowNumber, btn) {
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action: 'mark_processed', row: Number(rowNumber), key: accessKey })
   }).then(function(){
+    closeModal();
     loadData();
   }).catch(function(){
     btn.disabled = false;
