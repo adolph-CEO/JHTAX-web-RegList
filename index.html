@@ -23,19 +23,19 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 .jh-search { display: flex; gap: 8px; margin-bottom: 16px; }
 .jh-search input { flex: 1; font-size: 16px; padding: 10px 12px; border-radius: 8px; border: 1px solid #D9C9A3; background: #FBF8F2; }
 .jh-filter { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-.jh-filter button { font-size: 13px; padding: 6px 12px; border-radius: 20px; border: 1px solid #C8872A; background: #FFFFFF; color: #6B5A32; }
+.jh-filter button { font-size: 13px; padding: 6px 12px; border-radius: 20px; border: 1px solid #C8872A; background: #FFFFFF; color: #6B5A32; cursor: pointer; }
 .jh-filter button.is-active { background: #C8872A; color: #FFFFFF; }
 
-/* 條列式列表:每一列固定高度,不會因為展開而跳動 */
+/* 條列式列表:固定高度,不會因為展開而跳動 */
 .jh-row { display: flex; align-items: center; gap: 10px; background: #FFFFFF; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; border: 1px solid rgba(200,135,42,0.25); cursor: pointer; }
-.jh-row.is-processed { opacity: .55; }
+.jh-row.is-dimmed { opacity: .55; }
 .jh-row.is-active { border-color: #C8872A; background: #FBF0DC; box-shadow: 0 0 0 2px rgba(200,135,42,0.25); }
 .jh-row.is-highlighted { border-color: #C8872A; box-shadow: 0 0 0 3px rgba(200,135,42,0.18); }
-.jh-row__status-dot { width: 8px; height: 8px; border-radius: 50%; background: #B8860B; flex-shrink: 0; }
-.jh-row.is-processed .jh-row__status-dot { background: #C9C0A8; }
+.jh-row__status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .jh-row__name { font-size: 15px; font-weight: 700; color: #2C2412; flex-shrink: 0; }
 .jh-row__phone { font-size: 13px; color: #6B5A32; font-family: 'Space Mono', 'Noto Sans TC', monospace; flex-shrink: 0; }
 .jh-row__scene { font-size: 11px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; white-space: nowrap; }
+.jh-row__status-label { font-size: 11px; color: #6B5A32; flex-shrink: 0; white-space: nowrap; }
 .jh-row__time { font-size: 12px; color: #8A7A50; margin-left: auto; flex-shrink: 0; }
 
 /* 彈跳視窗 */
@@ -49,8 +49,11 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 .jh-modal__scene { display: inline-block; font-size: 12px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 12px; margin-bottom: 12px; }
 .jh-modal__phone { font-size: 15px; color: #4A3B14; font-weight: 700; margin-bottom: 14px; }
 .jh-modal__detail { font-size: 14px; color: #5A4A26; line-height: 1.9; white-space: pre-wrap; margin-bottom: 18px; padding-top: 14px; border-top: 1px solid rgba(200,135,42,0.15); }
-.jh-modal__btn { width: 100%; font-size: 15px; font-weight: 700; padding: 12px; border-radius: 9px; border: none; background: #B8860B; color: #FFFFFF; cursor: pointer; }
-.jh-modal__btn[disabled] { background: #C9C0A8; cursor: default; }
+.jh-modal__status-label { font-size: 12px; color: #8A7A50; margin-bottom: 8px; }
+.jh-modal__status-current { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.jh-modal__status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.jh-modal__status-btn { font-size: 13px; font-weight: 500; padding: 10px 8px; border-radius: 9px; border: 1.5px solid #D9C9A3; background: #FBF8F2; color: #4A3B14; cursor: pointer; }
+.jh-modal__status-btn[disabled] { border-color: #C8872A; background: #FBF0DC; color: #8B6508; font-weight: 700; cursor: default; }
 
 .jh-empty { text-align: center; color: #8A7A50; font-size: 14px; padding: 40px 0; }
 .jh-config { font-size: 13px; color: #8A7A50; background: #FBF8F2; border: 1px dashed #C8872A; border-radius: 8px; padding: 12px; margin-bottom: 16px; line-height: 1.7; }
@@ -76,10 +79,13 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
   <div class="jh-search">
     <input type="text" id="searchBox" placeholder="輸入手機號碼或稱呼搜尋">
   </div>
-  <div class="jh-filter">
+  <div class="jh-filter" id="filterBar">
     <button type="button" class="is-active" data-filter="all">全部</button>
     <button type="button" data-filter="未處理">未處理</button>
-    <button type="button" data-filter="已處理">已處理</button>
+    <button type="button" data-filter="已聯絡">已聯絡</button>
+    <button type="button" data-filter="聯絡不上(3次)">聯絡不上(3次)</button>
+    <button type="button" data-filter="委託中">委託中</button>
+    <button type="button" data-filter="不委託">不委託</button>
   </div>
 
   <div id="list"></div>
@@ -96,13 +102,24 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
     <span class="jh-modal__scene" id="modalScene"></span>
     <div class="jh-modal__phone" id="modalPhone"></div>
     <div class="jh-modal__detail" id="modalDetail"></div>
-    <button type="button" class="jh-modal__btn" id="modalMarkBtn">標記已處理</button>
+    <div class="jh-modal__status-label">目前狀態</div>
+    <div class="jh-modal__status-current" id="modalStatusCurrent"></div>
+    <div class="jh-modal__status-grid" id="modalStatusGrid"></div>
   </div>
 </div>
 
 <script>
 // 待辦:部署時把這裡換成跟 jhtax-line-hub.html 相同的 Apps Script Web App 網址
 var ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbzLZSFJboTo1rKHiYKrqpHRIfbkLOPLSnJcaLvlFv9IaRPZZTfDsrm6uh5IMioxx8TJNg/exec';
+
+var STATUSES = ['未處理', '已聯絡', '聯絡不上(3次)', '不委託', '委託中'];
+var STATUS_COLOR = {
+  '未處理': '#B8860B',
+  '已聯絡': '#8B6508',
+  '聯絡不上(3次)': '#B23A2E',
+  '不委託': '#C9C0A8',
+  '委託中': '#4B7455'
+};
 
 var allRows = [];
 var currentFilter = 'all';
@@ -152,14 +169,16 @@ function render() {
 
   document.getElementById('emptyState').style.display = filtered.length ? 'none' : 'block';
   listEl.innerHTML = filtered.map(function(row){
-    var processed = row['狀態'] === '已處理';
+    var status = row['狀態'] || '未處理';
     var isTarget = highlightRow && Number(row['_row']) === highlightRow;
     var isActive = activeRowNumber === Number(row['_row']);
-    return '<div class="jh-row' + (processed ? ' is-processed' : '') + (isTarget ? ' is-highlighted' : '') + (isActive ? ' is-active' : '') + '" data-row="' + row['_row'] + '">' +
-      '<span class="jh-row__status-dot"></span>' +
+    var dotColor = STATUS_COLOR[status] || '#B8860B';
+    return '<div class="jh-row' + (status === '不委託' ? ' is-dimmed' : '') + (isTarget ? ' is-highlighted' : '') + (isActive ? ' is-active' : '') + '" data-row="' + row['_row'] + '">' +
+      '<span class="jh-row__status-dot" style="background:' + dotColor + ';"></span>' +
       '<span class="jh-row__name">' + escapeHtml(row['稱呼']) + '</span>' +
       '<span class="jh-row__phone">' + escapeHtml(row['手機號碼']) + '</span>' +
       '<span class="jh-row__scene">' + escapeHtml(row['情境']) + '</span>' +
+      '<span class="jh-row__status-label">' + escapeHtml(status) + '</span>' +
       '<span class="jh-row__time">' + escapeHtml(formatTime(row['送出時間'])) + '</span>' +
       '</div>';
   }).join('');
@@ -192,13 +211,13 @@ function openModal(rowNumber) {
   var row = findRow(rowNumber);
   if (!row) return;
   activeRowNumber = rowNumber;
-  render(); // 重畫列表讓對應那一列顯示 active 狀態
+  render();
 
   var extra = {};
   try { extra = JSON.parse(row['其他欄位JSON'] || '{}'); } catch(e){}
   var detailLines = Object.keys(extra).filter(function(k){ return k !== 'scene' && extra[k]; })
     .map(function(k){ return k + ':' + extra[k]; }).join('\n');
-  var processed = row['狀態'] === '已處理';
+  var currentStatus = row['狀態'] || '未處理';
 
   document.getElementById('modalName').textContent = row['稱呼'] || '';
   document.getElementById('modalTime').textContent = formatTime(row['送出時間']);
@@ -207,10 +226,20 @@ function openModal(rowNumber) {
   document.getElementById('modalDetail').textContent = detailLines;
   document.getElementById('modalDetail').style.display = detailLines ? 'block' : 'none';
 
-  var markBtn = document.getElementById('modalMarkBtn');
-  markBtn.disabled = processed;
-  markBtn.textContent = processed ? '已處理' : '標記已處理';
-  markBtn.onclick = function(){ markProcessed(rowNumber, markBtn); };
+  var statusCurrentEl = document.getElementById('modalStatusCurrent');
+  statusCurrentEl.textContent = currentStatus;
+  statusCurrentEl.style.color = STATUS_COLOR[currentStatus] || '#8B6508';
+
+  var gridEl = document.getElementById('modalStatusGrid');
+  gridEl.innerHTML = STATUSES.map(function(s){
+    var isCurrent = s === currentStatus;
+    return '<button type="button" class="jh-modal__status-btn" data-status="' + escapeHtml(s) + '" ' + (isCurrent ? 'disabled' : '') + '>' + escapeHtml(s) + '</button>';
+  }).join('');
+  gridEl.querySelectorAll('.jh-modal__status-btn:not([disabled])').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setStatus(rowNumber, btn.dataset.status, btn);
+    });
+  });
 
   document.getElementById('modalOverlay').classList.add('is-visible');
 }
@@ -241,19 +270,20 @@ function formatTime(iso) {
   return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
-function markProcessed(rowNumber, btn) {
-  btn.disabled = true;
-  btn.textContent = '處理中…';
+function setStatus(rowNumber, status, btn) {
+  var grid = document.getElementById('modalStatusGrid');
+  grid.querySelectorAll('button').forEach(function(b){ b.disabled = true; });
+  if (btn) btn.textContent = '更新中…';
   fetch(ENDPOINT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'mark_processed', row: Number(rowNumber), key: accessKey })
+    body: JSON.stringify({ action: 'set_status', row: Number(rowNumber), status: status, key: accessKey })
   }).then(function(){
     closeModal();
     loadData();
   }).catch(function(){
-    btn.disabled = false;
-    btn.textContent = '標記失敗,再試一次';
+    grid.querySelectorAll('button').forEach(function(b){ b.disabled = false; });
+    if (btn) btn.textContent = '更新失敗,再試一次';
   });
 }
 
@@ -280,9 +310,9 @@ document.getElementById('searchBox') && document.getElementById('searchBox').add
 document.getElementById('refreshBtn') && document.getElementById('refreshBtn').addEventListener('click', function(){
   if (accessKey) loadData();
 });
-document.querySelectorAll('.jh-filter button').forEach(function(btn){
+document.querySelectorAll('#filterBar button').forEach(function(btn){
   btn.addEventListener('click', function(){
-    document.querySelectorAll('.jh-filter button').forEach(function(b){ b.classList.remove('is-active'); });
+    document.querySelectorAll('#filterBar button').forEach(function(b){ b.classList.remove('is-active'); });
     btn.classList.add('is-active');
     currentFilter = btn.dataset.filter;
     render();
