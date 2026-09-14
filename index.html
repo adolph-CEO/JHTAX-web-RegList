@@ -26,9 +26,20 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 .jh-filter button { font-size: 13px; padding: 6px 12px; border-radius: 20px; border: 1px solid #C8872A; background: #FFFFFF; color: #6B5A32; }
 .jh-filter button.is-active { background: #C8872A; color: #FFFFFF; }
 
-.jh-card { background: #FFFFFF; border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(200,135,42,0.25); }
+.jh-card { background: #FFFFFF; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid rgba(200,135,42,0.25); }
 .jh-card.is-processed { opacity: .55; }
 .jh-card.is-highlighted { border: 2px solid #C8872A; box-shadow: 0 0 0 3px rgba(200,135,42,0.18); }
+.jh-card__row { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.jh-card__row .jh-card__name { font-size: 15px; font-weight: 700; color: #2C2412; flex-shrink: 0; }
+.jh-card__row .jh-card__phone-short { font-size: 13px; color: #6B5A32; font-family: 'Space Mono', 'Noto Sans TC', monospace; flex-shrink: 0; }
+.jh-card__row .jh-card__scene-tag { font-size: 11px; background: #FBF8F2; color: #B8860B; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
+.jh-card__row .jh-card__time-short { font-size: 12px; color: #8A7A50; margin-left: auto; flex-shrink: 0; }
+.jh-card__row .jh-card__status-dot { width: 8px; height: 8px; border-radius: 50%; background: #B8860B; flex-shrink: 0; }
+.jh-card.is-processed .jh-card__status-dot { background: #C9C0A8; }
+.jh-card__caret { font-size: 11px; color: #B8860B; flex-shrink: 0; transition: transform .15s; }
+.jh-card.is-open .jh-card__caret { transform: rotate(90deg); }
+.jh-card__detail-wrap { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(200,135,42,0.15); }
+.jh-card.is-open .jh-card__detail-wrap { display: block; }
 .jh-card__top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
 .jh-card__name { font-size: 16px; font-weight: 700; color: #2C2412; }
 .jh-card__time { font-size: 12px; color: #8A7A50; }
@@ -129,18 +140,31 @@ function render() {
       .map(function(k){ return k + ':' + extra[k]; }).join('\n');
     var processed = row['狀態'] === '已處理';
     var isTarget = highlightRow && Number(row['_row']) === highlightRow;
-    return '<div class="jh-card' + (processed ? ' is-processed' : '') + (isTarget ? ' is-highlighted' : '') + '" ' + (isTarget ? 'data-highlighted="1"' : '') + '>' +
-      '<div class="jh-card__top"><span class="jh-card__name">' + escapeHtml(row['稱呼']) + '</span>' +
-      '<span class="jh-card__time">' + escapeHtml(formatTime(row['送出時間'])) + '</span></div>' +
-      '<span class="jh-card__scene">' + escapeHtml(row['情境']) + '</span>' +
-      '<div class="jh-card__phone">手機末三碼核對:' + escapeHtml((row['手機號碼']||'').toString().slice(-3)) + '(完整:' + escapeHtml(row['手機號碼']) + ')</div>' +
+    return '<div class="jh-card' + (processed ? ' is-processed' : '') + (isTarget ? ' is-highlighted is-open' : '') + '" ' + (isTarget ? 'data-highlighted="1"' : '') + '>' +
+      '<div class="jh-card__row" data-toggle="1">' +
+      '<span class="jh-card__status-dot"></span>' +
+      '<span class="jh-card__name">' + escapeHtml(row['稱呼']) + '</span>' +
+      '<span class="jh-card__phone-short">' + escapeHtml(row['手機號碼']) + '</span>' +
+      '<span class="jh-card__scene-tag">' + escapeHtml(row['情境']) + '</span>' +
+      '<span class="jh-card__time-short">' + escapeHtml(formatTime(row['送出時間'])) + '</span>' +
+      '<span class="jh-card__caret">▶</span>' +
+      '</div>' +
+      '<div class="jh-card__detail-wrap">' +
       (detailLines ? '<div class="jh-card__detail">' + escapeHtml(detailLines) + '</div>' : '') +
       '<button class="jh-card__btn" data-row="' + row['_row'] + '" ' + (processed ? 'disabled' : '') + '>' +
-      (processed ? '已處理' : '標記已處理') + '</button></div>';
+      (processed ? '已處理' : '標記已處理') + '</button>' +
+      '</div></div>';
   }).join('');
 
+  listEl.querySelectorAll('.jh-card__row').forEach(function(rowEl){
+    rowEl.addEventListener('click', function(){
+      rowEl.closest('.jh-card').classList.toggle('is-open');
+    });
+  });
+
   listEl.querySelectorAll('.jh-card__btn:not([disabled])').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
       markProcessed(btn.dataset.row, btn);
     });
   });
