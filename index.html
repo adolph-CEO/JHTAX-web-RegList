@@ -53,7 +53,7 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 </div>
 
 <div id="mainScreen" class="jh-wrap jh-hidden">
-  <h1>網路登記 查閱清單</h1>
+  <h1>網路登記 查閱清單 <button type="button" id="refreshBtn" style="font-size:12px; padding:4px 10px; border-radius:14px; border:1px solid #C8872A; background:#FFFFFF; color:#B8860B; cursor:pointer; vertical-align:middle;">重新整理</button></h1>
 
   <div id="configNotice" class="jh-config" style="display:none;">
     尚未設定資料來源網址。請把 Apps Script 部署後的網址填進本檔案裡的 <code>ENDPOINT_URL</code>。
@@ -92,10 +92,17 @@ function tryEnter() {
   var input = document.getElementById('gateInput');
   accessKey = input.value.trim();
   if (!accessKey) return;
+  var btn = document.getElementById('gateSubmit');
+  btn.disabled = true;
+  btn.textContent = '登入中…';
+  document.getElementById('gateError').classList.remove('is-visible');
   loadData();
 }
 
 function showGateError() {
+  var btn = document.getElementById('gateSubmit');
+  btn.disabled = false;
+  btn.textContent = '進入';
   document.getElementById('gateError').classList.add('is-visible');
 }
 
@@ -194,6 +201,9 @@ function loadData() {
 }
 
 document.getElementById('searchBox') && document.getElementById('searchBox').addEventListener('input', render);
+document.getElementById('refreshBtn') && document.getElementById('refreshBtn').addEventListener('click', function(){
+  if (accessKey) loadData();
+});
 document.querySelectorAll('.jh-filter button').forEach(function(btn){
   btn.addEventListener('click', function(){
     document.querySelectorAll('.jh-filter button').forEach(function(b){ b.classList.remove('is-active'); });
