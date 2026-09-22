@@ -118,6 +118,26 @@ var STATUS_COLOR = {
   '委託中': '#4B7455'
 };
 
+// 表單欄位名稱對照:把英文欄位key換成中文顯示,未列在這裡的key會照原樣顯示
+var FIELD_LABELS = {
+  business: '行業',
+  open_stage: '開幕時間',
+  product: '產品/服務',
+  payment: '收款方式',
+  city: '登記縣市',
+  lease: '地址狀況',
+  partner: '合夥人',
+  entity_type: '公司或行號',
+  unsure: '不確定的地方',
+  reason: '原因',
+  timing: '預計時間',
+  record_status: '資料整理狀況',
+  cashflow: '特殊金流',
+  years: '配合時間',
+  issue: '卡住的地方',
+  question: '想問的問題'
+};
+
 var allRows = [];
 var currentFilter = 'all';
 var highlightRow = Number(new URLSearchParams(location.search).get('row')) || null;
@@ -212,7 +232,7 @@ function openModal(rowNumber) {
   var extra = {};
   try { extra = JSON.parse(row['其他欄位JSON'] || '{}'); } catch(e){}
   var detailLines = Object.keys(extra).filter(function(k){ return k !== 'scene' && extra[k]; })
-    .map(function(k){ return k + ':' + extra[k]; }).join('\n');
+    .map(function(k){ return (FIELD_LABELS[k] || k) + '：' + extra[k]; }).join('\n');
   var currentStatus = row['狀態'] || '未處理';
 
   document.getElementById('modalName').textContent = row['稱呼'] || '';
