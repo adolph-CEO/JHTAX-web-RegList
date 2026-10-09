@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 <title>佳赫稅務 內部查閱頁</title>
+<link rel="icon" type="image/webp" href="https://jhtax.com.tw/wp-content/uploads/2025/05/cropped-favicon-270x270.webp">
+<link rel="apple-touch-icon" href="https://jhtax.com.tw/wp-content/uploads/2025/05/cropped-favicon-270x270.webp">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600&family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
 * { box-sizing: border-box; }
@@ -68,7 +70,7 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 </div>
 
 <div id="mainScreen" class="jh-wrap jh-hidden">
-  <h1>網路登記 查閱清單 <button type="button" id="refreshBtn" style="font-size:12px; padding:4px 10px; border-radius:14px; border:1px solid #C8872A; background:#FFFFFF; color:#B8860B; cursor:pointer; vertical-align:middle;">重新整理</button></h1>
+  <h1>網路登記 線上表單回報 <button type="button" id="refreshBtn" style="font-size:12px; padding:4px 10px; border-radius:14px; border:1px solid #C8872A; background:#FFFFFF; color:#B8860B; cursor:pointer; vertical-align:middle;">重新整理</button></h1>
 
   <div id="configNotice" class="jh-config" style="display:none;">
     尚未設定資料來源網址。請把 Apps Script 部署後的網址填進本檔案裡的 <code>ENDPOINT_URL</code>。
@@ -80,10 +82,10 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
   <div class="jh-filter" id="filterBar">
     <button type="button" class="is-active" data-filter="all">全部</button>
     <button type="button" data-filter="未處理">未處理</button>
-    <button type="button" data-filter="已聯絡">已聯絡</button>
-    <button type="button" data-filter="聯絡不上(3次)">聯絡不上(3次)</button>
-    <button type="button" data-filter="委託中">委託中</button>
+    <button type="button" data-filter="已委託">已委託</button>
     <button type="button" data-filter="不委託">不委託</button>
+    <button type="button" data-filter="考慮中">考慮中</button>
+    <button type="button" data-filter="聯絡不上">聯絡不上</button>
   </div>
 
   <div id="list"></div>
@@ -109,13 +111,13 @@ h1 { font-family: 'Noto Serif TC', serif; font-size: 19px; font-weight: 500; mar
 // 待辦:部署時把這裡換成跟 jhtax-line-hub.html 相同的 Apps Script Web App 網址
 var ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbzLZSFJboTo1rKHiYKrqpHRIfbkLOPLSnJcaLvlFv9IaRPZZTfDsrm6uh5IMioxx8TJNg/exec';
 
-var STATUSES = ['未處理', '已聯絡', '聯絡不上(3次)', '不委託', '委託中'];
+var STATUSES = ['未處理', '已委託', '不委託', '考慮中', '聯絡不上'];
 var STATUS_COLOR = {
   '未處理': '#B8860B',
-  '已聯絡': '#8B6508',
-  '聯絡不上(3次)': '#B23A2E',
+  '聯絡不上': '#B23A2E',
+  '已委託': '#4B7455',
   '不委託': '#C9C0A8',
-  '委託中': '#4B7455'
+  '考慮中': '#8B6508'
 };
 
 // 表單欄位名稱對照:把英文欄位key換成中文顯示,未列在這裡的key會照原樣顯示
@@ -135,7 +137,8 @@ var FIELD_LABELS = {
   cashflow: '特殊金流',
   years: '配合時間',
   issue: '卡住的地方',
-  question: '想問的問題'
+  question: '想問的問題',
+  invoice_plan: '是否預計開發票'
 };
 
 var allRows = [];
